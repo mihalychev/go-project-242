@@ -15,6 +15,9 @@ func main() {
 	cmd := &cli.Command{
 		Name:  "hexlet-path-size",
 		Usage: "print size of a file or directory",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{Name: "human", Aliases: []string{"H"}},
+		},
 		Action: func(_ context.Context, cmd *cli.Command) error {
 			path := cmd.Args().Get(0)
 			size, err := file.GetSize(path)
@@ -22,7 +25,8 @@ func main() {
 				return err
 			}
 
-			fmt.Println(file.FormatSize(size), path)
+			fmt.Println(file.FormatSize(size, cmd.Bool("human")), path)
+
 			return nil
 		},
 	}

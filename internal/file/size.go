@@ -23,23 +23,19 @@ func GetSize(path string) (int64, error) {
 	return fileInfo.Size(), nil
 }
 
-func FormatSize(bytes int64) string {
-	if bytes <= 1024 {
-		return fmt.Sprintf("%dB", bytes)
+func FormatSize(bytes int64, human bool) string {
+	size := float64(bytes)
+	if size < 1024 || !human {
+		return fmt.Sprintf("%.0fB", size)
 	}
 
-	kilobytes := bytes / 1024
-	if kilobytes <= 1024 {
-		return fmt.Sprintf("%dKB", kilobytes)
+	for _, unit := range []string{"KB", "MB", "GB", "TB", "PB", "EB"} {
+		size /= 1024
+		if size < 1024 {
+			return fmt.Sprintf("%.1f%s", size, unit)
+		}
 	}
-
-	megabytes := kilobytes / 1024
-	if megabytes <= 1024 {
-		return fmt.Sprintf("%dMB", megabytes)
-	}
-
-	gigabytes := kilobytes / 1024
-	return fmt.Sprintf("%dGB", gigabytes)
+	return fmt.Sprintf("%.1fEB", size)
 }
 
 func directoryFilesSize(path string) (int64, error) {

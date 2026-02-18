@@ -20,3 +20,23 @@ func TestGetSizeForDirectory(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, res, expected)
 }
+
+func TestFormatSizeNotHuman(t *testing.T) {
+	expected := "43689B"
+
+	size, err := GetSize("../../testdata/test_cat.png")
+	assert.NoError(t, err)
+
+	res := FormatSize(size, false)
+	assert.Equal(t, res, expected)
+}
+
+func TestFormatSizeHuman(t *testing.T) {
+	expected := "42.7KB" // 43689 / 1024 = 42.665...
+
+	size, err := GetSize("../../testdata/test_cat.png")
+	assert.NoError(t, err)
+
+	res := FormatSize(size, true)
+	assert.Equal(t, res, expected)
+}
