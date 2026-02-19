@@ -6,3 +6,5 @@ lint:
 
 test:
 	go test -v ./...
+
+precommit: lint test

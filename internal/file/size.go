@@ -3,25 +3,8 @@ package file
 import (
 	"fmt"
 	"os"
+	"strings"
 )
-
-func GetSize(path string) (int64, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return 0, err
-	}
-
-	if fileInfo.IsDir() {
-		size, err := directoryFilesSize(path)
-		if err != nil {
-			return 0, err
-		}
-
-		return size, nil
-	}
-
-	return fileInfo.Size(), nil
-}
 
 func FormatSize(bytes int64, human bool) string {
 	size := float64(bytes)
@@ -38,7 +21,34 @@ func FormatSize(bytes int64, human bool) string {
 	return fmt.Sprintf("%.1fEB", size)
 }
 
-func directoryFilesSize(path string) (int64, error) {
+func GetSize(path string, all bool) (int64, error) {
+	if isHidden(path) && !all {
+		return 0, nil
+	}
+
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return 0, err
+	}
+
+	if fileInfo.IsDir() {
+		size, err := directoryFilesSize(path, all)
+		if err != nil {
+			return 0, err
+		}
+
+		return size, nil
+	}
+
+	return fileInfo.Size(), nil
+}
+
+func isHidden(path string) bool {
+	pathParts := strings.Split(path, "/")
+	return pathParts[len(pathParts) - 1][0] == '.'
+}
+
+func directoryFilesSize(path string, all bool) (int64, error) {
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		return 0, err
@@ -51,7 +61,7 @@ func directoryFilesSize(path string) (int64, error) {
 			return 0, err
 		}
 
-		if fileInfo.IsDir() {
+		if fileInfo.IsDir() || (isHidden(fileInfo.Name()) && !all) {
 			continue
 		}
 

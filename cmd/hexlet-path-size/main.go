@@ -16,11 +16,12 @@ func main() {
 		Name:  "hexlet-path-size",
 		Usage: "print size of a file or directory",
 		Flags: []cli.Flag{
+			&cli.BoolFlag{Name: "all", Aliases: []string{"a"}},
 			&cli.BoolFlag{Name: "human", Aliases: []string{"H"}},
 		},
 		Action: func(_ context.Context, cmd *cli.Command) error {
 			path := cmd.Args().Get(0)
-			size, err := file.GetSize(path)
+			size, err := file.GetSize(path, cmd.Bool("all"))
 			if err != nil {
 				return err
 			}
