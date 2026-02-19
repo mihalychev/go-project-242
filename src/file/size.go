@@ -32,7 +32,7 @@ func GetSize(path string, all bool, recursive bool) (int64, error) {
 		return 0, nil
 	}
 
-	fileInfo, err := os.Stat(path)
+	fileInfo, err := os.Lstat(path)
 	if err != nil {
 		return 0, err
 	}
