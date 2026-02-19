@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"path/filepath"
 )
 
 func FormatSize(bytes int64, human bool) string {
@@ -21,7 +22,7 @@ func FormatSize(bytes int64, human bool) string {
 	return fmt.Sprintf("%.1fEB", size)
 }
 
-func GetSize(path string, all bool) (int64, error) {
+func GetSize(path string, all bool, recursive bool) (int64, error) {
 	if isHidden(path) && !all {
 		return 0, nil
 	}
@@ -32,7 +33,7 @@ func GetSize(path string, all bool) (int64, error) {
 	}
 
 	if fileInfo.IsDir() {
-		size, err := directoryFilesSize(path, all)
+		size, err := directoryFilesSize(path, all, recursive)
 		if err != nil {
 			return 0, err
 		}
@@ -45,10 +46,10 @@ func GetSize(path string, all bool) (int64, error) {
 
 func isHidden(path string) bool {
 	pathParts := strings.Split(path, "/")
-	return pathParts[len(pathParts) - 1][0] == '.'
+	return strings.HasPrefix(pathParts[len(pathParts) - 1], ".")
 }
 
-func directoryFilesSize(path string, all bool) (int64, error) {
+func directoryFilesSize(path string, all bool, recursive bool) (int64, error) {
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		return 0, err
@@ -61,11 +62,21 @@ func directoryFilesSize(path string, all bool) (int64, error) {
 			return 0, err
 		}
 
-		if fileInfo.IsDir() || (isHidden(fileInfo.Name()) && !all) {
+		if (isHidden(fileInfo.Name()) && !all) || (fileInfo.IsDir() && !recursive) {
 			continue
 		}
 
-		sum += fileInfo.Size()
+		if fileInfo.IsDir() {
+			nestedPath := filepath.Join(path, fileInfo.Name())
+			nestedSize, err := directoryFilesSize(nestedPath, all, recursive)
+			if err != nil {
+				return 0, err
+			}
+
+			sum += nestedSize
+		} else {
+			sum += fileInfo.Size()
+		}
 	}
 
 	return sum, nil
