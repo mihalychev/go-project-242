@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func GetPathSize(path string, all, human, recursive bool) (string, error) {
+func GetPathSize(path string, recursive, human, all bool) (string, error) {
 	if path == "" {
 		return "", errors.New("path argument must be passed")
 	}

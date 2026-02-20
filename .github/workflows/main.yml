@@ -17,7 +17,12 @@ jobs:
           go-version: "1.23.3"
 
       - name: Install dependencies
-        run: go get .
+        run: |
+          go mod tidy
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+      - name: Lint
+        run: make lint
 
       - name: Test
         run: make test
