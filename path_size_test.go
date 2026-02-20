@@ -7,6 +7,16 @@ import (
 
 const testDataDir = "testdata/dir2/"
 
+func TestGetPathSizeForBlankPath(t *testing.T) {
+	_, err := GetPathSize("", false, false, false)
+	assert.Error(t, err)
+}
+
+func TestGetPathSizeForIncorrectPath(t *testing.T) {
+	_, err := GetPathSize("incorrect", false, false, false)
+	assert.Error(t, err)
+}
+
 func TestGetPathSizeTableDriven(t *testing.T) {
 	var tests = []struct {
 		name      string
