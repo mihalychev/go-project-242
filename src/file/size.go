@@ -28,10 +28,6 @@ func FormatSize(bytes int64, human bool) (string, error) {
 }
 
 func GetSize(path string, all, recursive bool) (int64, error) {
-	if path == "" {
-		return 0, errors.New("path must be passed")
-	}
-
 	if isHidden(path) && !all {
 		return 0, nil
 	}

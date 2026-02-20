@@ -33,8 +33,12 @@ func main() {
 			},
 		},
 		Action: func(_ context.Context, cmd *cli.Command) error {
+			if cmd.Args().Len() != 1 {
+				return cli.ShowAppHelp(cmd)
+			}
+
 			path := cmd.Args().Get(0)
-			size, err := code.GetPathSize(path, cmd.Bool("all"), cmd.Bool("human"), cmd.Bool("recursive"))
+			size, err := code.GetPathSize(path, cmd.Bool("recursive"), cmd.Bool("human"), cmd.Bool("all"))
 			if err != nil {
 				return err
 			}

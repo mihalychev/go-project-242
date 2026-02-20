@@ -2,14 +2,9 @@ package code
 
 import (
 	"code/src/file"
-	"errors"
 )
 
 func GetPathSize(path string, recursive, human, all bool) (string, error) {
-	if path == "" {
-		return "", errors.New("path argument must be passed")
-	}
-
 	size, err := file.GetSize(path, all, recursive)
 	if err != nil {
 		return "", err
